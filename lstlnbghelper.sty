@@ -1,0 +1,44 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lstlnbghelper}[2023/05/26 v0.1 Provides extended LaTeX package for lstlinebgrd]
+%
+\RequirePackage{listings}
+\RequirePackage{lstlinebgrd}
+\RequirePackage{xcolor}
+\RequirePackage{xstring}
+
+%
+\newcommand{\bgOdd}[1]{\ifodd\value{lstnumber}\color{#1}\fi}
+\newcommand{\bgEven}[1]{\ifodd\value{lstnumber}\else\color{#1}\fi}
+\newcommand{\bgOddEven}[2]{\ifodd\value{lstnumber}\color{#1}\else\color{#2}\fi}
+
+\newcommand{\bgSelect}[2]{%
+\@for\word:=#1\do{%
+  \newcount\bgSelectFirst
+  \newcount\bgSelectSecond
+  \StrCount{\word}{-}[\bgSelectCount]%
+  \ifnum\bgSelectCount=0%
+    \bgSelectFirst=\word\relax%
+    \bgSelectSecond=\word\relax%
+  \else
+    \StrBefore{\word}{-}[\wordBefore]%
+    \ifx\wordBefore\@empty%
+      \edef\wordBefore{\string 0}%
+    \fi
+    \bgSelectFirst=\numexpr\wordBefore\relax%
+    \StrBehind{\word}{-}[\wordBehind]%
+    \ifx\wordBehind\@empty%
+      \edef\wordBehind{\string 9999999}%
+    \fi
+    \bgSelectSecond=\numexpr\wordBehind\relax%
+  \fi
+  \advance\bgSelectFirst -1\relax%
+  \advance\bgSelectSecond 1\relax%
+  \ifnum\value{lstnumber}>\bgSelectFirst%
+      \ifnum\value{lstnumber}<\bgSelectSecond%
+          \color{#2}%
+      \fi
+  \fi
+  % \the\bgSelectFirst% for debug
+  % \the\bgSelectSecond% for debug
+}%
+}
